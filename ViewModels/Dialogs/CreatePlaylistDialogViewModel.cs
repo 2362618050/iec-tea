@@ -1,0 +1,48 @@
+﻿namespace Player.ViewModels.Dialogs
+{
+    using Player.Models.Dialogs;
+    using Player.ViewModels.Interfaces.Dialogs;
+
+    internal sealed class CreatePlaylistDialogViewModel : DialogViewModel<PlaylistCreation>, ICreatePlaylistDialogViewModel
+    {
+        public CreatePlaylistDialogViewModel(PlaylistCreation data) : base(data)
+        {
+            DisplayName = "New Playlist";
+        }
+
+        private string _playlistName;
+        public string PlaylistName
+        {
+            get => _playlistName;
+
+            set
+            {
+                if (_playlistName == value) return;
+
+                _playlistName = value;
+                NotifyOfPropertyChange(nameof(PlaylistName));
+                NotifyOfPropertyChange(nameof(CanOk));
+            }
+        }
+
+        public bool CanOk => !string.IsNullOrWhiteSpace(PlaylistName);
+
+        public void Ok()
+        {
+            CloseWithResponse(true);
+        }
+
+        public void Cancel()
+        {
+            CloseWithResponse(false);
+        }
+
+        private void CloseWithResponse(bool create)
+        {
+            Data.Create = create;
+            Data.Name = PlaylistName?.Trim();
+
+            TryClose();
+        }
+    }
+}
